@@ -138,4 +138,10 @@ class ProductController extends Controller
             return $this->serverError($exception->getMessage());
         }
     }
+
+    public function productPage(String $categoryName, String $productName)
+    {
+        $product = Product::where('name', $productName)->with(['category', 'image'])->whereRelation('category', 'name', $categoryName)->select('name', 'label', 'description', 'price', 'category_id', 'image_id')->first();
+        return view(!$product ? 'notfound' : 'menu/product', ['product' => $product]);
+    }
 }

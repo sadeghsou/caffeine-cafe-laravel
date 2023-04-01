@@ -72,8 +72,8 @@ class CategoryController extends Controller
         try {
             if ($this->request->has('product')) {
                 if ($this->request->has('full'))
-                    return $this->successful(Category::withTrashed()->with('product')->get());
-                return $this->successful(Category::with('product')->get());
+                    return $this->successful(Category::withTrashed()->with('products')->get());
+                return $this->successful(Category::with('products')->get());
             } else if ($this->request->has('full'))
                 return $this->successful(Category::withTrashed()->get());
             return $this->successful(Category::get());
@@ -126,5 +126,17 @@ class CategoryController extends Controller
         } catch (\Exception $exception) {
             return $this->serverError($exception->getMessage());
         }
+    }
+
+    public function categoriesPage()
+    {
+        $categories = Category::select('id', 'name', 'label', 'description')->with('image')->get();
+        return view('menu/categories', ['categories' => $categories]);
+    }
+
+    public function categoryPage(String $categoryName)
+    {
+        $category = Category::where('name', $categoryName)->with(['products', 'image'])->select('id', 'name', 'label', 'description', 'image_id')->first();
+        return view(!$category ? 'notfound' : 'menu/category', ['category' => $category]);
     }
 }
