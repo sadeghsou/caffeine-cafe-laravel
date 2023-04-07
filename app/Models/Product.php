@@ -16,12 +16,6 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-
-    public function image(): BelongsTo
-    {
-        return $this->belongsTo(File::class);
-    }
-
     protected $fillable = [
         'category_id',
         'price',

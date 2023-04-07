@@ -51,7 +51,7 @@ class FileController extends Controller
                 'size' => $this->request->file->getSize(),
                 'mime' => $fileMimeExtension[0],
                 'extension' => $fileMimeExtension[1],
-                'file_path' => $physicalFilePath
+                'path' => $physicalFilePath
             ]);
 
             DB::commit();

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\File;
 use App\Traits\Utils\Responser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,25 +28,23 @@ class CategoryController extends Controller
                 'name' => 'required|string',
                 'label' => 'required|string',
                 'description' => 'string',
-                'image' => 'numeric',
             ], [
                 'name.required' => 'نام الزامی میباشد',
                 'name.string' => 'نام باید رشته باشد',
                 'label.required' => 'عنوان الزامی میباشد',
                 'label.string' => 'عنوان باید رشته باشد',
                 'description.string' => 'توضیحات باید رشته باشد',
-                'image.numeric' => 'عکس نامعتبر میباشد',
+                'image.string' => 'آدرس عکس نامعتبر میباشد',
             ]);
 
             if ($validation->fails()) throw new \Exception(serialize($validation->getMessageBag()), 400);
 
-            if ($this->request->has('image') && !File::find($this->request->image)) throw new \Exception('عکس نامعتبر است', 400);
 
             $category = new Category;
             $category->name = $this->request->name;
             $category->label = $this->request->label;
             if ($this->request->has('description')) $category->description = $this->request->description;
-            if ($this->request->has('image')) $category->image_id = $this->request->image;
+            if ($this->request->has('image')) $category->image = $this->request->image;
             $category->save();
             DB::commit();
             return $this->successful($category, "Category Created", 201);
@@ -93,12 +90,12 @@ class CategoryController extends Controller
                 'name' => 'string',
                 'label' => 'string',
                 'description' => 'string',
-                'image' => 'integer',
+                'image' => 'string',
             ], [
                 'name.string' => 'نام باید رشته باشد',
                 'label.string' => 'عنوان باید رشته باشد',
                 'description.string' => 'توضیحات باید رشته باشد',
-                'image.integer' => 'آی‌دی عکس باید عدد باشد',
+                'image.string' => 'آدرس عکس نامعتبر میباشد',
             ]);
 
             if ($validation->fails()) throw new \Exception(serialize($validation->getMessageBag()), 400);
@@ -130,13 +127,13 @@ class CategoryController extends Controller
 
     public function categoriesPage()
     {
-        $categories = Category::select('id', 'name', 'label', 'description')->with('image')->get();
+        $categories = Category::select('id', 'name', 'label', 'description', 'image')->get();
         return view('menu/categories', ['categories' => $categories]);
     }
 
     public function categoryPage(String $categoryName)
     {
-        $category = Category::where('name', $categoryName)->with(['products', 'image'])->select('id', 'name', 'label', 'description', 'image_id')->first();
+        $category = Category::where('name', $categoryName)->with('products')->select('id', 'name', 'label', 'description', 'image')->first();
         return view(!$category ? 'notfound' : 'menu/category', ['category' => $category]);
     }
 }

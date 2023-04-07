@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\File;
 use App\Models\Product;
 use App\Traits\Utils\Responser;
 use Illuminate\Http\Request;
@@ -31,7 +30,7 @@ class ProductController extends Controller
                 'price' => 'required|numeric',
                 'label' => 'required|string',
                 'category' => 'required|numeric',
-                'image' => 'numeric',
+                'image' => 'string',
                 'description' => 'string',
             ], [
                 'name.required' => 'نام الزامی میباشد',
@@ -39,7 +38,7 @@ class ProductController extends Controller
                 'label.required' => 'عنوان الزامی میباشد',
                 'label.string' => 'عنوان باید رشته باشد',
                 'description.string' => 'توضیحات باید رشته باشد',
-                'image.numeric' => 'عکس نامعتبر میباشد',
+                'image.string' => 'آدرس عکس نامعتبر میباشد',
                 'price.required' => 'دسته بندی الزامی میباشد',
                 'price.numeric' => 'دسته بندی نامعتبر میباشد',
                 'category.required' => 'دسته بندی الزامی میباشد',
@@ -50,15 +49,13 @@ class ProductController extends Controller
 
             if (!Category::find($this->request->category)) throw new \Exception('دسته بندی نامعتبر است', 400);
 
-            if ($this->request->has('image') && !File::find($this->request->image)) throw new \Exception('عکس نامعتبر است', 400);
-
             $product = new Product;
             $product->name = $this->request->name;
             $product->label = $this->request->label;
             $product->price = $this->request->price;
             $product->category_id = $this->request->category;
             if ($this->request->has('description')) $product->description = $this->request->description;
-            if ($this->request->has('image')) $product->image_id = $this->request->image;
+            if ($this->request->has('image')) $product->image = $this->request->image;
             $product->save();
             DB::commit();
             return $this->successful($product, "Product Created", 201);
@@ -104,12 +101,12 @@ class ProductController extends Controller
                 'name' => 'string',
                 'label' => 'string',
                 'description' => 'string',
-                'image' => 'integer',
+                'image' => 'string',
             ], [
                 'name.string' => 'نام باید رشته باشد',
                 'label.string' => 'عنوان باید رشته باشد',
                 'description.string' => 'توضیحات باید رشته باشد',
-                'image.integer' => 'آی‌دی عکس باید عدد باشد',
+                'image.string' => 'آدرس عکس نامعتبر میباشد',
             ]);
 
             if ($validation->fails()) throw new \Exception(serialize($validation->getMessageBag()), 400);
@@ -141,7 +138,7 @@ class ProductController extends Controller
 
     public function productPage(String $categoryName, String $productName)
     {
-        $product = Product::where('name', $productName)->with(['category', 'image'])->whereRelation('category', 'name', $categoryName)->select('name', 'label', 'description', 'price', 'category_id', 'image_id')->first();
+        $product = Product::where('name', $productName)->with('category')->whereRelation('category', 'name', $categoryName)->select('name', 'label', 'description', 'price', 'category_id', 'image')->first();
         return view(!$product ? 'notfound' : 'menu/product', ['product' => $product]);
     }
 }

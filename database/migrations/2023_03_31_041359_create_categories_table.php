@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('label');
             $table->string('description')->nullable();
-            $table->unsignedBigInteger('image_id')->nullable();
-            $table->foreign('image_id')->references('id')->on('files');
+            $table->string('image')->default('/logo.png');
             $table->softDeletes();
             $table->timestamps();
         });
