@@ -28,13 +28,15 @@ class CategoryController extends Controller
                 'name' => 'required|string',
                 'label' => 'required|string',
                 'description' => 'string',
+                'image' => 'mimes:png,jpg,jpeg|max:4194304'
             ], [
                 'name.required' => 'نام الزامی میباشد',
                 'name.string' => 'نام باید رشته باشد',
                 'label.required' => 'عنوان الزامی میباشد',
                 'label.string' => 'عنوان باید رشته باشد',
                 'description.string' => 'توضیحات باید رشته باشد',
-                'image.string' => 'آدرس عکس نامعتبر میباشد',
+                'image.mimes' => 'فرمت عکس نامعتبر میباشد',
+                'image.max' => 'حجم عکس زیاد است',
             ]);
 
             if ($validation->fails()) throw new \Exception(serialize($validation->getMessageBag()), 400);
@@ -44,7 +46,11 @@ class CategoryController extends Controller
             $category->name = $this->request->name;
             $category->label = $this->request->label;
             if ($this->request->has('description')) $category->description = $this->request->description;
-            if ($this->request->has('image')) $category->image = $this->request->image;
+            if ($this->request->has('image')) {
+                $filePath = 'categories/' . $this->request->name . '.' . explode('/', $this->request->image->getMimeType())[1];
+                $this->request->file('image')->storeAs('public', $filePath);
+                $category->image = $filePath; //$category->image = $this->request->image;
+            }
             $category->save();
             DB::commit();
             return $this->successful($category, "Category Created", 201);

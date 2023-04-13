@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,3 +26,11 @@ Route::prefix('/menu')->group(function () {
         Route::get('/{categoryName}/{productName}', [ProductController::class, 'productPage']);
     });
 });
+
+Route::prefix('/admin')->middleware('auth')->group(function () {
+    Route::get('/', function (Request $request) {
+        dd($request);
+    });
+});
+
+Auth::routes();

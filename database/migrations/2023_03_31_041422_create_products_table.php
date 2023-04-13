@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('categories');
-            $table->unsignedInteger('price');
+            $table->string('prices');
             $table->string('label');
             $table->string('description')->nullable();
             $table->string('image')->default('/logo.png');

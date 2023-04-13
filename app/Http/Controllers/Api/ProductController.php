@@ -27,7 +27,7 @@ class ProductController extends Controller
         try {
             $validation = Validator::make($this->request->all(), [
                 'name' => 'required|string',
-                'price' => 'required|numeric',
+                'prices' => 'required|string',
                 'label' => 'required|string',
                 'category' => 'required|numeric',
                 'image' => 'string',
@@ -39,8 +39,8 @@ class ProductController extends Controller
                 'label.string' => 'عنوان باید رشته باشد',
                 'description.string' => 'توضیحات باید رشته باشد',
                 'image.string' => 'آدرس عکس نامعتبر میباشد',
-                'price.required' => 'دسته بندی الزامی میباشد',
-                'price.numeric' => 'دسته بندی نامعتبر میباشد',
+                'prices.required' => 'قیمت الزامی میباشد',
+                'prices.string' => 'قیمت(ها) نامعتبر میباشد',
                 'category.required' => 'دسته بندی الزامی میباشد',
                 'category.numeric' => 'دسته بندی نامعتبر میباشد',
             ]);
@@ -52,7 +52,7 @@ class ProductController extends Controller
             $product = new Product;
             $product->name = $this->request->name;
             $product->label = $this->request->label;
-            $product->price = $this->request->price;
+            $product->prices = $this->request->prices;
             $product->category_id = $this->request->category;
             if ($this->request->has('description')) $product->description = $this->request->description;
             if ($this->request->has('image')) $product->image = $this->request->image;
@@ -101,12 +101,14 @@ class ProductController extends Controller
                 'name' => 'string',
                 'label' => 'string',
                 'description' => 'string',
+                'prices' => 'string',
                 'image' => 'string',
             ], [
                 'name.string' => 'نام باید رشته باشد',
                 'label.string' => 'عنوان باید رشته باشد',
                 'description.string' => 'توضیحات باید رشته باشد',
                 'image.string' => 'آدرس عکس نامعتبر میباشد',
+                'prices.string' => 'قیمت(ها) نامعتبر میباشد',
             ]);
 
             if ($validation->fails()) throw new \Exception(serialize($validation->getMessageBag()), 400);
@@ -115,6 +117,7 @@ class ProductController extends Controller
             if ($this->request->has('label')) $product->label = $this->request->label;
             if ($this->request->has('description')) $product->description = $this->request->description;
             if ($this->request->has('image')) $product->image = $this->request->image;
+            if ($this->request->has('prices')) $product->prices = $this->request->prices;
             $product->save();
             DB::commit();
             return $this->successful($product);
@@ -138,7 +141,7 @@ class ProductController extends Controller
 
     public function productPage(String $categoryName, String $productName)
     {
-        $product = Product::where('name', $productName)->with('category')->whereRelation('category', 'name', $categoryName)->select('name', 'label', 'description', 'price', 'category_id', 'image')->first();
+        $product = Product::where('name', $productName)->with('category')->whereRelation('category', 'name', $categoryName)->select('name', 'label', 'description', 'prices', 'category_id', 'image')->first();
         return view(!$product ? 'notfound' : 'menu/product', ['product' => $product]);
     }
 }
