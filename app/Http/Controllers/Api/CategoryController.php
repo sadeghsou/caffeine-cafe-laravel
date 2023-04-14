@@ -142,4 +142,15 @@ class CategoryController extends Controller
         $category = Category::where('name', $categoryName)->with('products')->select('id', 'name', 'label', 'description', 'image')->first();
         return view(!$category ? 'notfound' : 'menu/category', ['category' => $category]);
     }
+
+    public function categoriesAdminPage()
+    {
+        $categories = Category::get();
+        return view('admin/categories/index', ['categories' => $categories]);
+    }
+
+    public function categoryAdminPage(Category $category)
+    {
+        return view('admin/categories/detail', ['category' => $category]);
+    }
 }

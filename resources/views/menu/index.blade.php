@@ -17,14 +17,14 @@
 
         .menu-bg-cover {
             width: 100%;
-            height: 100%;
+            height: 100vh;
             position: absolute;
             z-index: 1;
         }
 
         .menu-bg {
             width: 100%;
-            height: 100%;
+            height: 100vh;
             position: absolute;
             z-index: 2;
         }

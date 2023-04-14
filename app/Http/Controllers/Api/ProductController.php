@@ -144,4 +144,17 @@ class ProductController extends Controller
         $product = Product::where('name', $productName)->with('category')->whereRelation('category', 'name', $categoryName)->select('name', 'label', 'description', 'prices', 'category_id', 'image')->first();
         return view(!$product ? 'notfound' : 'menu/product', ['product' => $product]);
     }
+
+    public function productsAdminPage()
+    {
+        $categories = Category::with('products')->get();
+        // return $categories;
+        return view('admin/products/index', ['categories' => $categories]);
+    }
+
+    public function productAdminPage(Product $product = null)
+    {
+        if ($product) return view('admin/products/detail', ['product' => $product]);
+        return view('admin/products/add', ['categories' => Category::get()]);
+    }
 }

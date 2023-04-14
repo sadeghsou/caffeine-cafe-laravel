@@ -3,7 +3,9 @@
     box-sizing: border-box;
     font-family: yekanbakh;
     scroll-behavior: smooth;
-    line-height: 1;
+    line-height: 1.5;
+    padding: 0;
+    margin: 0;
 }
 
 html,
